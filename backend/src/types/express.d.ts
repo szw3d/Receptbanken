@@ -8,6 +8,7 @@ declare global {
         role: UserRole
         username: string
         email: string
+        profileImage?: string
       }
     }
   }

@@ -76,7 +76,7 @@ async function saveProfile() {
     const uploaded = selectedProfileImage.value ? await uploadImages([selectedProfileImage.value]) : []
     const updated = await updateProfile({ ...form, profileImage: uploaded[0] ?? form.profileImage })
     profile.value = updated
-    if (authStore.user) authStore.user.username = updated.username
+    if (authStore.user) Object.assign(authStore.user, { username: updated.username, profileImage: updated.profileImage })
     successMessage.value = 'Profilen sparades.'
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : 'Kunde inte spara profilen.'

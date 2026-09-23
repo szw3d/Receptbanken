@@ -20,6 +20,7 @@ import { uploadDirectory, uploadRouter } from './routes/upload.routes.js'
 import { accountRouter } from './routes/account.routes.js'
 import { contentRouter } from './routes/content.routes.js'
 import { activityRouter } from './routes/activity.routes.js'
+import { publicStatsRouter } from './routes/public-stats.routes.js'
 
 export const app = express()
 
@@ -34,6 +35,7 @@ app.get('/', (_request, response) => {
   response.json({ success: true, data: { name: 'Receptbanken API' } })
 })
 app.use('/api/health', healthRouter)
+app.use('/api/stats', publicStatsRouter)
 app.use('/api/auth', authRouter)
 app.use('/api/admin', adminRouter)
 app.use('/api/categories', categoryRouter)

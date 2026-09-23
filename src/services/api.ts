@@ -15,6 +15,21 @@ export interface RecipeListResponse {
   pagination: { page: number; limit: number; total: number; pages: number }
 }
 
+export interface HomeStats {
+  recipes: number
+  users: number
+  favorites: number
+  averageRating: number
+  reviewCount: number
+}
+
+export async function fetchHomeStats(): Promise<HomeStats> {
+  const response = await fetch(`${apiBaseUrl}/stats`)
+  const payload = (await response.json()) as ApiResponse<HomeStats>
+  if (!response.ok || !payload.success) throw new Error(payload.message ?? 'Kunde inte hamta statistik.')
+  return payload.data
+}
+
 export async function fetchRecipes(query: RecipeQuery = {}): Promise<RecipeListResponse> {
   const params = new URLSearchParams()
   Object.entries(query).forEach(([key, value]) => {
@@ -38,7 +53,8 @@ export interface AuthUser {
   id: string
   username: string
   email: string
-  role: 'user' | 'admin'
+  role: 'user' | 'moderator' | 'admin'
+  profileImage?: string
 }
 export type LoginResponse = AuthUser | { requiresTwoFactor: true }
 
@@ -264,7 +280,7 @@ export interface ActivityLog { _id: string; action: string; entityType?: string;
 export async function fetchActivityLogs(): Promise<ActivityLog[]> { const response = await fetch(`${apiBaseUrl}/admin/activity`, { credentials: 'include' }); const payload = (await response.json()) as ApiResponse<ActivityLog[]>; if (!response.ok || !payload.success) throw new Error(payload.message ?? 'Kunde inte hämta aktivitetsloggen.'); return payload.data }
 
 export interface AdminDashboardData {
-  stats: { users: number; recipes: number; categories: number; favorites: number; totalViews: number }
+  stats: { users: number; moderators: number; admins: number; recipes: number; categories: number; favorites: number; totalViews: number }
   recentUsers: Array<{ username: string; email: string; role: string; createdAt: string }>
   recentRecipes: Recipe[]
   mostViewedRecipes: Array<{ _id: string; title: string; views: number }>
@@ -277,12 +293,20 @@ export async function fetchAdminDashboard(): Promise<AdminDashboardData> {
   return payload.data
 }
 
-export interface AdminUser { _id: string; username: string; email: string; role: string; createdAt: string }
+export type UserRole = AuthUser['role']
+export interface AdminUser { _id: string; username: string; email: string; role: UserRole; createdAt: string }
 
 export async function fetchAdminUsers(): Promise<AdminUser[]> {
   const response = await fetch(`${apiBaseUrl}/admin/users`, { credentials: 'include' })
   const payload = (await response.json()) as ApiResponse<AdminUser[]>
   if (!response.ok || !payload.success) throw new Error(payload.message ?? 'Kunde inte hämta användare.')
+  return payload.data
+}
+
+export async function updateAdminUserRole(userId: string, role: UserRole): Promise<AdminUser> {
+  const response = await fetch(`${apiBaseUrl}/admin/users/${userId}/role`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ role }) })
+  const payload = (await response.json()) as ApiResponse<AdminUser>
+  if (!response.ok || !payload.success) throw new Error(payload.message ?? 'Kunde inte uppdatera rollen.')
   return payload.data
 }
 

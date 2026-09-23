@@ -4,10 +4,13 @@ import { RecipeModel } from '../models/recipe.model.js'
 import { UserModel } from '../models/user.model.js'
 import { ReviewModel } from '../models/review.model.js'
 import { ReportModel } from '../models/report.model.js'
+import type { UserRole } from '../models/user.model.js'
 
 export async function getAdminDashboard() {
-  const [users, recipes, categories, favorites, totalViews, recentUsers, recentRecipes, mostViewedRecipes] = await Promise.all([
+  const [users, moderators, admins, recipes, categories, favorites, totalViews, recentUsers, recentRecipes, mostViewedRecipes] = await Promise.all([
     UserModel.countDocuments().exec(),
+    UserModel.countDocuments({ role: 'moderator' }).exec(),
+    UserModel.countDocuments({ role: 'admin' }).exec(),
     RecipeModel.countDocuments().exec(),
     CategoryModel.countDocuments().exec(),
     FavoriteModel.countDocuments().exec(),
@@ -17,7 +20,7 @@ export async function getAdminDashboard() {
     RecipeModel.find().select('title views').sort({ views: -1 }).limit(5).lean().exec(),
   ])
 
-  return { stats: { users, recipes, categories, favorites, totalViews: totalViews[0]?.total ?? 0 }, recentUsers, recentRecipes, mostViewedRecipes }
+  return { stats: { users, moderators, admins, recipes, categories, favorites, totalViews: totalViews[0]?.total ?? 0 }, recentUsers, recentRecipes, mostViewedRecipes }
 }
 
 export function listAdminUsers() {
@@ -32,6 +35,13 @@ export async function deleteAdminUser(userId: string) {
   await FavoriteModel.deleteMany({ userId }).exec()
   await RecipeModel.deleteMany({ authorId: userId }).exec()
   await UserModel.findByIdAndDelete(userId).exec()
+}
+
+export async function updateAdminUserRole(userId: string, role: UserRole) {
+  return UserModel.findByIdAndUpdate(userId, { role }, { returnDocument: 'after', runValidators: true })
+    .select('username email role createdAt')
+    .lean()
+    .exec()
 }
 
 export async function deleteAdminRecipe(recipeId: string) {

@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose'
 
-export type UserRole = 'user' | 'admin'
+export type UserRole = 'user' | 'moderator' | 'admin'
 
 export interface UserDocument {
   username: string
@@ -26,7 +26,7 @@ const userSchema = new Schema<UserDocument>(
     passwordHash: { type: String, required: true, select: false },
     profileImage: { type: String, trim: true, maxlength: 500 },
     bio: { type: String, trim: true, maxlength: 500 },
-    role: { type: String, enum: ['user', 'admin'], default: 'user', required: true, index: true },
+    role: { type: String, enum: ['user', 'moderator', 'admin'], default: 'user', required: true, index: true },
     twoFactorSecret: { type: String, select: false },
     pendingTwoFactorSecret: { type: String, select: false },
     lastActiveAt: { type: Date, default: Date.now, index: true },

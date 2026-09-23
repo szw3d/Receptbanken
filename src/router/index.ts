@@ -48,7 +48,7 @@ router.beforeEach(async (to) => {
   const authStore = useAuthStore()
   if (!authStore.initialized) await authStore.initialize()
   if (!authStore.user) return '/logga-in'
-  if (to.meta.requiresAdmin && authStore.user.role !== 'admin') return '/dashboard'
+  if (to.meta.requiresAdmin && !['moderator', 'admin'].includes(authStore.user.role)) return '/dashboard'
   return true
 })
 

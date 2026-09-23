@@ -23,7 +23,7 @@ categoryRouter.get('/:id', async (request, response, next) => {
   }
 })
 
-categoryRouter.post('/', requireAuth, requireRole('admin'), async (request, response, next) => {
+categoryRouter.post('/', requireAuth, requireRole('moderator'), async (request, response, next) => {
   try {
     const input = categoryBodySchema.parse(request.body)
     response.status(201).json({ success: true, data: await createNewCategory(input) })
@@ -32,7 +32,7 @@ categoryRouter.post('/', requireAuth, requireRole('admin'), async (request, resp
   }
 })
 
-categoryRouter.put('/:id', requireAuth, requireRole('admin'), async (request, response, next) => {
+categoryRouter.put('/:id', requireAuth, requireRole('moderator'), async (request, response, next) => {
   try {
     const { id } = categoryIdSchema.parse(request.params)
     const input = categoryBodySchema.partial().parse(request.body)
@@ -42,7 +42,7 @@ categoryRouter.put('/:id', requireAuth, requireRole('admin'), async (request, re
   }
 })
 
-categoryRouter.delete('/:id', requireAuth, requireRole('admin'), async (request, response, next) => {
+categoryRouter.delete('/:id', requireAuth, requireRole('moderator'), async (request, response, next) => {
   try {
     const { id } = categoryIdSchema.parse(request.params)
     await removeCategory(id)

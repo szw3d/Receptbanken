@@ -17,7 +17,7 @@ authRouter.post('/register', async (request, response, next) => {
 
     response.status(201).json({
       success: true,
-      data: { id: user._id, username: user.username, email: user.email, role: user.role },
+      data: { id: user._id, username: user.username, email: user.email, role: user.role, profileImage: user.profileImage },
     })
   } catch (error) {
     next(error)
@@ -39,7 +39,7 @@ authRouter.post('/login', async (request, response, next) => {
 
     response.json({
       success: true,
-      data: { id: user._id, username: user.username, email: user.email, role: user.role },
+      data: { id: user._id, username: user.username, email: user.email, role: user.role, profileImage: user.profileImage },
     })
   } catch (error) {
     next(error)

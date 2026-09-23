@@ -1,12 +1,20 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 
 import RecipeCard from '../components/RecipeCard.vue'
 import { useRecipeStore } from '../stores/recipe.store'
 import { fetchCategories, type Category } from '../services/api'
 
 const recipeStore = useRecipeStore()
-const filters = reactive({ search: '', category: '', difficulty: '', maxTime: '', sort: 'newest' })
+const route = useRoute()
+const filters = reactive({
+  search: typeof route.query.search === 'string' ? route.query.search : '',
+  category: typeof route.query.category === 'string' ? route.query.category : '',
+  difficulty: typeof route.query.difficulty === 'string' ? route.query.difficulty : '',
+  maxTime: typeof route.query.maxTime === 'string' ? route.query.maxTime : '',
+  sort: typeof route.query.sort === 'string' ? route.query.sort : 'recommended',
+})
 const categories = ref<Category[]>([])
 const currentPage = ref(1)
 const recommendedRecipe = computed(() => recipeStore.result.items[0])

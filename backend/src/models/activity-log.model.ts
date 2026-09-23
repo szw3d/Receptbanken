@@ -1,6 +1,6 @@
 import { Schema, Types, model } from 'mongoose'
 
-export type ActivityAction = 'auth.login' | 'auth.logout' | 'recipe.created' | 'recipe.updated' | 'recipe.deleted' | 'favorite.added' | 'favorite.removed' | 'review.created' | 'account.updated' | 'account.deleted' | 'admin.report.viewed'
+export type ActivityAction = 'auth.login' | 'auth.logout' | 'recipe.created' | 'recipe.updated' | 'recipe.deleted' | 'favorite.added' | 'favorite.removed' | 'review.created' | 'account.updated' | 'account.deleted' | 'admin.report.viewed' | 'admin.user.role.updated' | 'admin.user.deleted'
 
 export interface ActivityLogDocument {
   userId?: Types.ObjectId

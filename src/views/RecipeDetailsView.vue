@@ -97,8 +97,8 @@ function changeImage(direction: number) {
         <div class="details-actions">
           <button v-if="authStore.user" class="button button--dark" type="button" :disabled="favoriteLoading" @click="toggleFavorite">{{ favoriteState ? 'Sparad som favorit' : 'Spara som favorit' }} <span aria-hidden="true">{{ favoriteState ? '♥' : '♡' }}</span></button>
           <RouterLink v-else class="subtle-link" to="/logga-in">Logga in för att spara receptet</RouterLink>
-          <RouterLink v-if="authStore.user && ((typeof recipe.authorId === 'string' ? recipe.authorId : recipe.authorId?._id) === authStore.user.id || authStore.user.role === 'admin')" class="subtle-link" :to="`/recept/${recipe._id}/redigera`">Redigera recept</RouterLink>
-          <button v-if="authStore.user && ((typeof recipe.authorId === 'string' ? recipe.authorId : recipe.authorId?._id) === authStore.user.id || authStore.user.role === 'admin')" class="danger-button" type="button" @click="removeRecipe">Ta bort recept</button>
+          <RouterLink v-if="authStore.user && ((typeof recipe.authorId === 'string' ? recipe.authorId : recipe.authorId?._id) === authStore.user.id || ['moderator', 'admin'].includes(authStore.user.role))" class="subtle-link" :to="`/recept/${recipe._id}/redigera`">Redigera recept</RouterLink>
+          <button v-if="authStore.user && ((typeof recipe.authorId === 'string' ? recipe.authorId : recipe.authorId?._id) === authStore.user.id || ['moderator', 'admin'].includes(authStore.user.role))" class="danger-button" type="button" @click="removeRecipe">Ta bort recept</button>
         </div>
         <div class="recipe-details__columns">
           <section>

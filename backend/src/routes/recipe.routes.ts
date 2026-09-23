@@ -1,6 +1,6 @@
 import { Router } from 'express'
 
-import { requireAuth } from '../middleware/auth.js'
+import { isAdminRole, requireAuth } from '../middleware/auth.js'
 import { AppError } from '../middleware/error-handler.js'
 import { getRecipe, createRecipeForUser, deleteRecipeForUser, listRecipes, updateRecipeForUser } from '../services/recipe.service.js'
 import { recipeBodySchema, recipeIdSchema, recipeQuerySchema } from '../validation/recipe.validation.js'
@@ -47,7 +47,7 @@ recipeRouter.put('/:id', requireAuth, async (request, response, next) => {
     const { id } = recipeIdSchema.parse(request.params)
     const input = recipeBodySchema.partial().parse(request.body)
     if (!request.authenticatedUser) throw new AppError(401, 'Du måste vara inloggad.')
-    const recipe = await updateRecipeForUser(id, input, request.authenticatedUser.id, request.authenticatedUser.role === 'admin')
+    const recipe = await updateRecipeForUser(id, input, request.authenticatedUser.id, isAdminRole(request.authenticatedUser.role))
     response.json({ success: true, data: recipe })
   } catch (error) {
     next(error)
@@ -58,7 +58,7 @@ recipeRouter.delete('/:id', requireAuth, async (request, response, next) => {
   try {
     const { id } = recipeIdSchema.parse(request.params)
     if (!request.authenticatedUser) throw new AppError(401, 'Du måste vara inloggad.')
-    await deleteRecipeForUser(id, request.authenticatedUser.id, request.authenticatedUser.role === 'admin')
+    await deleteRecipeForUser(id, request.authenticatedUser.id, isAdminRole(request.authenticatedUser.role))
     response.status(204).send()
   } catch (error) {
     next(error)
